@@ -12,7 +12,7 @@ venv/
 # PyTorch 模型（允许上传到 GitHub，Vercel 读取 model/ 目录）
 # *.pth
 # *.pt
-*.onnx
+# *.onnx
 
 # IDE
 .idea/
@@ -25,3 +25,4 @@ Thumbs.db
 
 #数据 大文件
 nakano-images/
+.vercel

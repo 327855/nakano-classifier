@@ -1,7 +1,5 @@
-import torch
-import torch.nn as nn
-from torchvision import models
-import torchvision.transforms as transforms
+import onnxruntime as ort
+import numpy as np
 from PIL import Image
 import base64
 import io
@@ -14,31 +12,24 @@ CLASS_NAMES = ["一花", "五月", "三玖", "二乃", "四叶"]
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
-_transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=IMAGENET_MEAN, std=IMAGENET_STD),
-])
-
-_model = None
+_session = None
 
 
-def _build_model():
-    m = models.resnet18(weights=None)
-    m.fc = nn.Linear(m.fc.in_features, 5)
-    return m
+def _load_session():
+    global _session
+    if _session is None:
+        model_path = os.path.join(os.path.dirname(__file__), "..", "model", "resnet18_nakano.onnx")
+        _session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
+    return _session
 
 
-def _load_model():
-    global _model
-    if _model is None:
-        _model = _build_model()
-        model_path = os.path.join(os.path.dirname(__file__), "..", "model", "resnet18_nakano.pth")
-        _model.load_state_dict(
-            torch.load(model_path, map_location="cpu", weights_only=True)
-        )
-        _model.eval()
-    return _model
+def _preprocess(img: Image.Image) -> np.ndarray:
+    img = img.resize((224, 224))
+    arr = np.array(img, dtype=np.float32) / 255.0
+    for c in range(3):
+        arr[:, :, c] = (arr[:, :, c] - IMAGENET_MEAN[c]) / IMAGENET_STD[c]
+    arr = arr.transpose(2, 0, 1)[np.newaxis, ...]
+    return arr.astype(np.float32)
 
 
 @app.route("/api/predict", methods=["POST", "OPTIONS"])
@@ -57,22 +48,22 @@ def predict():
     try:
         img_bytes = base64.b64decode(image_b64)
         img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
-        img_tensor = _transform(img).unsqueeze(0)
+        img_tensor = _preprocess(img)
     except Exception as e:
         return json.dumps({"error": f"图片解析失败: {str(e)}"}), 400, {"Content-Type": "application/json"}
 
     try:
-        model = _load_model()
-        with torch.no_grad():
-            output = model(img_tensor)
-            probs = torch.softmax(output, dim=1)
-            confidence, pred_idx = probs.max(1)
+        sess = _load_session()
+        input_name = sess.get_inputs()[0].name
+        output = sess.run(None, {input_name: img_tensor})[0]
+        probs = np.exp(output) / np.exp(output).sum(axis=1, keepdims=True)
+        pred_idx = int(np.argmax(probs, axis=1)[0])
+        conf = float(np.max(probs, axis=1)[0])
 
-        pred_class = CLASS_NAMES[pred_idx.item()]
-        conf = round(confidence.item(), 4)
+        pred_class = CLASS_NAMES[pred_idx]
     except FileNotFoundError:
         return json.dumps({"error": "模型文件未找到"}), 500, {"Content-Type": "application/json"}
     except Exception as e:
         return json.dumps({"error": f"推理失败: {str(e)}"}), 500, {"Content-Type": "application/json"}
 
-    return json.dumps({"name": pred_class, "confidence": conf}), 200, {"Content-Type": "application/json"}
+    return json.dumps({"name": pred_class, "confidence": round(conf, 4)}), 200, {"Content-Type": "application/json"}
