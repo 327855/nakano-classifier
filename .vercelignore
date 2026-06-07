@@ -1,0 +1,27 @@
+# Vercel 部署时忽略的文件
+.git/
+.pytest_cache/
+*.pyc
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# 训练相关文件（API 推理不需要）
+model/*_history.json
+model/*.png
+model/*_data.py
+model/*train*.py
+model/*verify*.py
+model/*main*.py
+model/*config*.py
+model/__pycache__/
+model/*.pth
+model/*.pt
+
+# 根目录下的非 API 代码
+convert_to_onnx.py
+vc_app.py
+app.py
+wed/*.css
+wed/images/

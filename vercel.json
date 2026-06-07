@@ -7,5 +7,23 @@
   "routes": [
     { "src": "/api/(.*)", "dest": "api/$1.py" },
     { "src": "/(.*)", "dest": "wed/$1" }
-  ]
+  ],
+  "functions": {
+    "api/**/*.py": {
+      "excludeFiles": [
+        "model/*.pth",
+        "model/*.pt",
+        "model/*_history.json",
+        "model/*.png",
+        "model/*_data.py",
+        "model/*train*.py",
+        "model/*verify*.py",
+        "model/*config*.py",
+        "model/*main*.py",
+        "model/__pycache__/**",
+        "__pycache__/**",
+        "*.pyc"
+      ]
+    }
+  }
 }
