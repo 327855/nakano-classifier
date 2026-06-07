@@ -1,13 +1,15 @@
-# Vercel 部署时忽略的文件
+# Vercel deployment ignore
 .git/
 .pytest_cache/
-*.pyc
 __pycache__/
+*.pyc
 .ipynb_checkpoints/
 .venv/
 venv/
+*.egg-info/
+.pytest_cache/
 
-# 训练相关文件（API 推理不需要）
+# Training files (not needed for API inference)
 model/*_history.json
 model/*.png
 model/*_data.py
@@ -18,10 +20,16 @@ model/*config*.py
 model/__pycache__/
 model/*.pth
 model/*.pt
+model/*.onnx.data
+model/split_data.json
 
-# 根目录下的非 API 代码
+# Root non-API files
 convert_to_onnx.py
 vc_app.py
 app.py
+old_model.onnx
+committed_model.onnx
+
+# Static files (served separately)
 wed/*.css
 wed/images/
