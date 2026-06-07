@@ -8,8 +8,7 @@ import os
 import sys
 import tempfile
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from _model_embedded import MODEL_B64
+from _model_assembly import MODEL_B64
 from flask import request
 import vercel
 
