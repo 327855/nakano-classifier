@@ -32,7 +32,7 @@ def _preprocess(img: Image.Image) -> np.ndarray:
     return arr.astype(np.float32)
 
 
-@app.route("/api/predict", methods=["POST", "OPTIONS"])
+@app.route("/predict", methods=["POST", "OPTIONS"])
 def predict():
     if request.method == "OPTIONS":
         return "", 204
