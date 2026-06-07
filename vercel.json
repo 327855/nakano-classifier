@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     { "src": "wed/**", "use": "@vercel/static" },
-    { "src": "api/**/*.py", "use": "@vercel/python" }
+    { "src": "api/predict.py", "use": "@vercel/python" }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "api/$1.py" },
