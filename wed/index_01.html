@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五等分新娘</title>
+    <link rel="stylesheet" href="style_01.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>五等分新娘</h1>
+        <p>上传图片，AI 帮你识别是哪位角色</p>
+    </header>
+
+    <section class="upload-area">
+        <h2>上传图片</h2>
+        <input type="file" id="imageInput" accept="image/*">
+        <button id="predictButton">识别</button>
+    </section>
+
+    <main>
+        <div class="card">
+            <img src="../nakano-images/nakano-ichika/safebooru_2502982_nomd5.jpg" alt="一花">
+            <div class="info">
+                <h2>一花</h2>
+                <p>性格温柔的大姐</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="../nakano-images/nakano-itsuki/safebooru_2485619_nomd5.jpg" alt="五月">
+            <div class="info">
+                <h2>五月</h2>
+                <p>喜欢吃东西的小妹妹</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="../nakano-images/nakano-miku/safebooru_2905785_nomd5.jpg" alt="三玖">
+            <div class="info">
+                <h2>三玖</h2>
+                <p>喜欢战国武将的耳机女孩</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="../nakano-images/nakano-nino/safebooru_3704701_nomd5.png" alt="二乃">
+            <div class="info">
+                <h2>二乃</h2>
+                <p>傲娇属性的二姐，擅长料理</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="../nakano-images/nakano-yotsuba/safebooru_3431328_nomd5.png" alt="四叶">
+            <div class="info">
+                <h2>四叶</h2>
+                <p>元气满满的小天使，运动全能</p>
+            </div>
+        </div>
+    </main>
+
+    <section class="result-area" id="resultArea" style="display: none;">
+        <h2>识别结果</h2>
+        <div id="resultDisplay"></div>
+    </section>
+
+    <div class="lightbox" id="lightbox">
+        <span class="close" id="closeLightbox">&times;</span>
+        <img id="lightboxImage" src="" alt="">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+
+    <script src="main.js"></script>
+
+</body>
+</html>
