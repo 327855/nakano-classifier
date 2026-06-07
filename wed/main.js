@@ -64,16 +64,26 @@ predictBtn.addEventListener("click", async () => {
     resultContent.innerHTML = "<p style='color:#888;'>正在识别，请稍候...</p>";
 
     try {
-        // ==================== 发送请求到后端 ====================
-        // FormData 用于构造"multipart/form-data"格式的请求体
-        const formData = new FormData();
-        formData.append("image", file);
+        // ==================== 读取图片并转为 base64 ====================
+        // FileReader 将图片文件读取为 base64 字符串
+        const reader = new FileReader();
+        const imageBase64 = await new Promise((resolve, reject) => {
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(file);
+        });
 
-        // fetch 发送 POST 请求到后端
+        // FileReader 产生的结果是 "data:image/xxx;base64,xxxxx" 格式
+        // split(",")[1] 去掉前缀，只保留纯 base64 字符串部分
+        const base64Data = imageBase64.split(",")[1];
+
+        // ==================== 发送请求到后端 ====================
+        // fetch 发送 POST 请求到 /api/predict
         // await 等待后端返回结果，代码暂停在这里，不会阻塞页面
-        const response = await fetch("http://127.0.0.1:5000/api/predict", {
+        const response = await fetch("/api/predict", {
             method: "POST",
-            body: formData,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ image: base64Data }),
         });
 
         // 解析返回的 JSON
