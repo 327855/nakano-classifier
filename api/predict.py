@@ -5,8 +5,11 @@ import base64
 import io
 import json
 import os
+import sys
 import tempfile
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from _model_embedded import MODEL_B64
 from flask import request
 import vercel
 
@@ -23,8 +26,7 @@ _tmp_model_path = None
 def _get_model_path():
     global _tmp_model_path
     if _tmp_model_path is None:
-        from api import _model_embedded
-        model_bytes = base64.b64decode(_model_embedded.MODEL_B64)
+        model_bytes = base64.b64decode(MODEL_B64)
         fd, _tmp_model_path = tempfile.mkstemp(suffix=".onnx")
         os.write(fd, model_bytes)
         os.close(fd)

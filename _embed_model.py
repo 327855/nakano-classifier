@@ -1,7 +1,7 @@
 import base64, os
 
 model_path = "model/resnet18_nakano.onnx"
-out_path = "api/_model_embedded.py"
+out_path = "_model_embedded.py"
 
 with open(model_path, "rb") as f:
     data = f.read()
