@@ -9,10 +9,15 @@ venv/
 # Jupyter
 .ipynb_checkpoints/
 
-# PyTorch 模型（允许上传到 GitHub，Vercel 读取 model/ 目录）
-# *.pth
-# *.pt
-# *.onnx
+# PyTorch / ONNX 模型（不提交到 Git，通过 api/_model_embedded.py 嵌入部署）
+*.pth
+*.pt
+*.onnx
+*.onnx.data
+model/*.pth
+model/*.pt
+model/*.onnx
+model/*.onnx.data
 
 # IDE
 .idea/

@@ -5,21 +5,38 @@ import base64
 import io
 import json
 import os
+import tempfile
 
-app = __import__("vercel").app
+from flask import request
+import vercel
+
+app = vercel.app
 
 CLASS_NAMES = ["一花", "五月", "三玖", "二乃", "四叶"]
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
 _session = None
+_tmp_model_path = None
+
+
+def _get_model_path():
+    global _tmp_model_path
+    if _tmp_model_path is None:
+        from api import _model_embedded
+        model_bytes = base64.b64decode(_model_embedded.MODEL_B64)
+        fd, _tmp_model_path = tempfile.mkstemp(suffix=".onnx")
+        os.write(fd, model_bytes)
+        os.close(fd)
+    return _tmp_model_path
 
 
 def _load_session():
     global _session
     if _session is None:
-        model_path = os.path.join(os.path.dirname(__file__), "..", "model", "resnet18_nakano.onnx")
-        _session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
+        _session = ort.InferenceSession(
+            _get_model_path(), providers=["CPUExecutionProvider"]
+        )
     return _session
 
 
@@ -61,8 +78,6 @@ def predict():
         conf = float(np.max(probs, axis=1)[0])
 
         pred_class = CLASS_NAMES[pred_idx]
-    except FileNotFoundError:
-        return json.dumps({"error": "模型文件未找到"}), 500, {"Content-Type": "application/json"}
     except Exception as e:
         return json.dumps({"error": f"推理失败: {str(e)}"}), 500, {"Content-Type": "application/json"}
 
