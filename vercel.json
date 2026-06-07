@@ -1,27 +1,11 @@
 {
   "version": 2,
-  "buildCommand": "echo 'using default python builder'",
-  "installCommand": "pip install -r requirements.txt",
-  "excludeFiles": [
-    "model/**/*.pth",
-    "model/**/*.pt",
-    "model/**/*_history.json",
-    "model/**/*.png",
-    "model/**/*_data.py",
-    "model/**/*train*.py",
-    "model/**/*verify*.py",
-    "model/**/*main*.py",
-    "model/**/*config*.py",
-    "model/__pycache__/**",
-    "__pycache__/**",
-    "*.pyc",
-    "convert_to_onnx.py",
-    "app.py",
-    "vc_app.py",
-    "old_model.onnx",
-    "committed_model.onnx",
-    "_embed_model.py",
-    "_embed_data.py",
-    "test_api.py"
+  "builds": [
+    { "src": "wed/**", "use": "@vercel/static" },
+    { "src": "api/**/*.py", "use": "@vercel/python" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "api/$1.py" },
+    { "src": "/(.*)", "dest": "wed/$1" }
   ]
 }
